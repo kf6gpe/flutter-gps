@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -6,6 +8,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    print("MyApp build");
     return MaterialApp(
       title: 'GPS',
       theme: ThemeData(
@@ -43,16 +46,28 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  String latitude = 'N/A';
+  String longitude = 'N/A';
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+  var geolocator = Geolocator();
+  var locationOptions =
+      LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
+  Stream<Position> _positionStream;
+  StreamSubscription<Position> _positionStreamSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    print("Hello world!");
+    _positionStream = geolocator.getPositionStream(locationOptions);
+    _positionStreamSubscription = _positionStream.listen((Position position) {
+      if (position == null) {
+        latitude = 'unknown';
+        longitude = 'unknown';
+      } else {
+        latitude = position.latitude.toString();
+        longitude = position.longitude.toString();
+      }
     });
   }
 
@@ -93,34 +108,39 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                'Latitude',
+                  'Latitude',
                 ),
                 Text(
-                 '37',
-                style: Theme.of(context).textTheme.display1,
-              ),
-            ],
+                  '$latitude',
+                  style: Theme.of(context).textTheme.display1,
+                ),
+              ],
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-            Text(
-              'Longitude',
-            ),
-            Text(
-              '122',
-              style: Theme.of(context).textTheme.display1,
-            ),
+                Text(
+                  'Longitude',
+                ),
+                Text(
+                  '$longitude',
+                  style: Theme.of(context).textTheme.display1,
+                ),
               ],
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  @override
+  void dispose() {
+    if (_positionStreamSubscription != null) {
+      super.dispose();
+      _positionStreamSubscription.cancel();
+      _positionStreamSubscription = null;
+      
+    }
   }
 }
