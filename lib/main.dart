@@ -61,13 +61,17 @@ class _MyHomePageState extends State<MyHomePage> {
     print("Hello world!");
     _positionStream = geolocator.getPositionStream(locationOptions);
     _positionStreamSubscription = _positionStream.listen((Position position) {
-      if (position == null) {
-        latitude = 'unknown';
-        longitude = 'unknown';
-      } else {
-        latitude = position.latitude.toString();
-        longitude = position.longitude.toString();
-      }
+      setState(() {
+        if (position == null) {
+          latitude = 'unknown';
+          longitude = 'unknown';
+          print("foo");
+        } else {
+          latitude = position.latitude.toString();
+          longitude = position.longitude.toString();
+          print("BAR");
+        }
+      });
     });
   }
 
@@ -140,7 +144,6 @@ class _MyHomePageState extends State<MyHomePage> {
       super.dispose();
       _positionStreamSubscription.cancel();
       _positionStreamSubscription = null;
-      
     }
   }
 }
