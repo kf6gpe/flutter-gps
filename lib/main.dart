@@ -8,7 +8,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    print("MyApp build");
     return MaterialApp(
       title: 'GPS',
       theme: ThemeData(
@@ -58,18 +57,15 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    print("Hello world!");
     _positionStream = geolocator.getPositionStream(locationOptions);
     _positionStreamSubscription = _positionStream.listen((Position position) {
       setState(() {
         if (position == null) {
           latitude = 'unknown';
           longitude = 'unknown';
-          print("foo");
         } else {
           latitude = position.latitude.toString();
           longitude = position.longitude.toString();
-          print("BAR");
         }
       });
     });
