@@ -1,6 +1,5 @@
-import 'dart:async';
-import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() => runApp(MyApp());
 
@@ -46,36 +45,25 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // Sensible defaults for the map view --- San Francisco.
-  double latitude = 37.7749; 
+  double latitude = 37.7749;
   double longitude = -122.4194;
+
+  LatLng center;
+
+  // The fields we'll show.
   String latitudeAsSring = 'N/A';
   String longitudeAsString = 'N/A';
 
-  var geolocator = Geolocator();
-  var locationOptions =
-      LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
-  Stream<Position> _positionStream;
-  StreamSubscription<Position> _positionStreamSubscription;
+  GoogleMapController mapController;
 
   @override
   void initState() {
+    center = LatLng(latitude, longitude);
     super.initState();
-    _positionStream = geolocator.getPositionStream(locationOptions);
-    _positionStreamSubscription = _positionStream.listen((Position position) {
-      setState(() {
-        if (position == null) {
-          latitudeAsSring = 'unknown';
-          longitudeAsString = 'unknown';
-        } else {
-          latitude = position.latitude;
-          longitude = position.longitude;
-          latitudeAsSring = ((latitude.abs() * 1000.0).floor() / 1000.0).toString() + 
-            (latitude > 0 ? '° N' : '° S');
-          longitudeAsString = ((longitude.abs() * 1000.0).floor() / 1000.0).toString() + 
-            (longitude > 180 ? '° E' : '° W');
-        }
-      });
-    });
+  }
+
+  void onMapCreated(GoogleMapController controller) async {
+    mapController = controller;
   }
 
   @override
@@ -95,58 +83,63 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Row(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug paint" (press "p" in the console where you ran
-          // "flutter run", or select "Toggle Debug Paint" from the Flutter tool
-          // window in IntelliJ) to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Latitude',
-                ),
-                Text(
-                  '$latitudeAsSring',
-                  style: Theme.of(context).textTheme.display1,
-                ),
-              ],
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Longitude',
-                ),
-                Text(
-                  '$longitudeAsString',
-                  style: Theme.of(context).textTheme.display1,
-                ),
-              ],
-            ),
+            Row(
+                // Column is also layout widget. It takes a list of children and
+                // arranges them vertically. By default, it sizes itself to fit its
+                // children horizontally, and tries to be as tall as its parent.
+                //
+                // Invoke "debug paint" (press "p" in the console where you ran
+                // "flutter run", or select "Toggle Debug Paint" from the Flutter tool
+                // window in IntelliJ) to see the wireframe for each widget.
+                //
+                // Column has various properties to control how it sizes itself and
+                // how it positions its children. Here we use mainAxisAlignment to
+                // center the children vertically; the main axis here is the vertical
+                // axis because Columns are vertical (the cross axis would be
+                // horizontal).
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'Latitude',
+                      ),
+                      Text(
+                        '$latitudeAsSring',
+                        style: Theme.of(context).textTheme.display1,
+                      ),
+                    ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'Longitude',
+                      ),
+                      Text(
+                        '$longitudeAsString',
+                        style: Theme.of(context).textTheme.display1,
+                      ),
+                    ],
+                  ),
+                ]),
+            SizedBox(
+                width: 400,
+                height: 400,
+                child: GoogleMap(
+                    onMapCreated: onMapCreated,
+                    options: GoogleMapOptions(
+                        trackCameraPosition: true,
+                        cameraPosition:
+                            CameraPosition(target: center, zoom: 11.0))))
           ],
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    if (_positionStreamSubscription != null) {
-      super.dispose();
-      _positionStreamSubscription.cancel();
-      _positionStreamSubscription = null;
-    }
   }
 }
