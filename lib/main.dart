@@ -45,8 +45,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String latitude = 'N/A';
-  String longitude = 'N/A';
+  // Sensible defaults for the map view --- San Francisco.
+  double latitude = 37.7749; 
+  double longitude = -122.4194;
+  String latitudeAsSring = 'N/A';
+  String longitudeAsString = 'N/A';
 
   var geolocator = Geolocator();
   var locationOptions =
@@ -61,11 +64,15 @@ class _MyHomePageState extends State<MyHomePage> {
     _positionStreamSubscription = _positionStream.listen((Position position) {
       setState(() {
         if (position == null) {
-          latitude = 'unknown';
-          longitude = 'unknown';
+          latitudeAsSring = 'unknown';
+          longitudeAsString = 'unknown';
         } else {
-          latitude = position.latitude.toString();
-          longitude = position.longitude.toString();
+          latitude = position.latitude;
+          longitude = position.longitude;
+          latitudeAsSring = ((latitude.abs() * 1000.0).floor() / 1000.0).toString() + 
+            (latitude > 0 ? '° N' : '° S');
+          longitudeAsString = ((longitude.abs() * 1000.0).floor() / 1000.0).toString() + 
+            (longitude > 180 ? '° E' : '° W');
         }
       });
     });
@@ -111,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   'Latitude',
                 ),
                 Text(
-                  '$latitude',
+                  '$latitudeAsSring',
                   style: Theme.of(context).textTheme.display1,
                 ),
               ],
@@ -123,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   'Longitude',
                 ),
                 Text(
-                  '$longitude',
+                  '$longitudeAsString',
                   style: Theme.of(context).textTheme.display1,
                 ),
               ],
