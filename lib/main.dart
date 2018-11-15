@@ -91,6 +91,16 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    if (_positionStreamSubscription != null) {
+      super.dispose();
+      _positionStreamSubscription.cancel();
+      _positionStreamSubscription = null;
+    }
+  }
+
+
   void onMapCreated(GoogleMapController controller) async {
     mapController = controller;
   }
