@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 
 void main() => runApp(MyApp());
 
@@ -45,20 +48,46 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // Sensible defaults for the map view --- San Francisco.
-  double latitude = 37.7749;
-  double longitude = -122.4194;
-
-  LatLng center;
+  LatLng center = LatLng(37.7749, -122.4194);
 
   // The fields we'll show.
   String latitudeAsSring = 'N/A';
   String longitudeAsString = 'N/A';
 
+
+  var geolocator = Geolocator();
+  var locationOptions =
+      LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
+  Stream<Position> _positionStream;
+  StreamSubscription<Position> _positionStreamSubscription;
+
+
   GoogleMapController mapController;
 
   @override
   void initState() {
-    center = LatLng(latitude, longitude);
+    _positionStream = geolocator.getPositionStream(locationOptions);
+    _positionStreamSubscription = _positionStream.listen((Position position) {
+      setState(() {
+        if (position == null) {
+          latitudeAsSring = 'unknown';
+          longitudeAsString = 'unknown';
+        } else {
+          double latitude = position.latitude;
+          double longitude = position.longitude;
+          latitudeAsSring = ((latitude.abs() * 1000.0).floor() / 1000.0).toString() + 
+            (latitude > 0 ? '° N' : '° S');
+          longitudeAsString = ((longitude.abs() * 1000.0).floor() / 1000.0).toString() + 
+            (longitude > 180 ? '° E' : '° W');
+          center = LatLng(latitude, longitude);
+          if (mapController != null)
+          {
+            mapController.animateCamera(CameraUpdate.newCameraPosition(
+               CameraPosition(target: center, zoom: 12.0)));
+          }
+        }
+      });
+    });
     super.initState();
   }
 
@@ -136,7 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     options: GoogleMapOptions(
                         trackCameraPosition: true,
                         cameraPosition:
-                            CameraPosition(target: center, zoom: 11.0))))
+                            CameraPosition(target: center, zoom: 12.0))))
           ],
         ),
       ),
