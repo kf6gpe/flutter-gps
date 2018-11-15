@@ -3,10 +3,13 @@
 A simple project showing GPS and map integration in Flutter.
 
 To use this, you'll need to have an map API key from Google and/or Apple, 
-and add it to your project:
+and add it to your project.
+
+First, Get an API key at https://cloud.google.com/maps-platform/. 
+
+Next, follow the steps below for each platform.
 
 ## Android 
-Get an API key at https://cloud.google.com/maps-platform/.
 
 Specify your API key in the application manifest 
 `android/app/src/main/AndroidManifest.xml`:
