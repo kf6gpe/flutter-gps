@@ -50,6 +50,8 @@ class _MyHomePageState extends State<MyHomePage> {
   // Sensible defaults for the map view --- San Francisco.
   LatLng center = LatLng(37.7749, -122.4194);
 
+
+
   // The fields we'll show.
   String latitudeAsSring = 'N/A';
   String longitudeAsString = 'N/A';
@@ -61,6 +63,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Stream<Position> _positionStream;
   StreamSubscription<Position> _positionStreamSubscription;
 
+  String markerId = "YouAreHere";
+  Marker here;
 
   GoogleMapController mapController;
 
@@ -83,7 +87,14 @@ class _MyHomePageState extends State<MyHomePage> {
           if (mapController != null)
           {
             mapController.animateCamera(CameraUpdate.newCameraPosition(
-               CameraPosition(target: center, zoom: 12.0)));
+               CameraPosition(target: center, zoom: 12.0))
+            );
+            if (here != null) {
+              mapController.removeMarker(here);
+            }
+            mapController.addMarker( MarkerOptions( 
+                position: center )
+            ).then( (m) => here = m );
           }
         }
       });
