@@ -89,12 +89,14 @@ class _MyHomePageState extends State<MyHomePage> {
             mapController.animateCamera(CameraUpdate.newCameraPosition(
                CameraPosition(target: center, zoom: 12.0))
             );
+            /*
             if (here != null) {
               mapController.removeMarker(here);
             }
             mapController.addMarker( MarkerOptions( 
                 position: center )
             ).then( (m) => here = m );
+            */
           }
         }
       });
