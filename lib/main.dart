@@ -185,10 +185,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 height: 400,
                 child: GoogleMap(
                     onMapCreated: onMapCreated,
-                    options: GoogleMapOptions(
-                        trackCameraPosition: true,
-                        cameraPosition:
-                            CameraPosition(target: center, zoom: 12.0))))
+                    initialCameraPosition: CameraPosition(target: center, zoom: 12.0),
+                )),
           ],
         ),
       ),
