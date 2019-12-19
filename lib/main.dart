@@ -183,9 +183,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ])
             ),
-            SizedBox(
-                width: 400,
-                height: 400,
+            ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 400, maxHeight: 400),
                 child: GoogleMap(
                     onMapCreated: onMapCreated,
                     initialCameraPosition: CameraPosition(target: center, zoom: 12.0),
