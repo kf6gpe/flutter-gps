@@ -47,5 +47,8 @@
 	<string>This app needs access to location when open and in the background.</string>
         <key>io.flutter.embedded_views_preview</key>
 	<string>YES</string>
+	<array>
+	<string>com.lothlorien.flutter_gps.location_task</string>
+	</array>
 </dict>
 </plist>

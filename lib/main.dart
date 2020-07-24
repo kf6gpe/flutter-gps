@@ -1,10 +1,26 @@
 import 'dart:async';
+import 'package:flt_worker/android.dart';
+import 'package:flt_worker/ios.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flt_worker/flt_worker.dart';
 
+void main() {
+  runApp(MyApp());
+  initializeWorker(worker);
+} 
 
-void main() => runApp(MyApp());
+Future<void> worker(WorkPayload payload) {
+  if (payload.tags.contains('getLocation')) {
+    print('get the position here');
+    enqueueWorkIntent(WorkIntent(
+      identifier: 'getLocation',
+      initialDelay: Duration(seconds: 5),
+    ));
+  }
+  return Future.value();
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -47,16 +63,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  
+  
   // Sensible defaults for the map view --- San Francisco.
   LatLng center = LatLng(37.7749, -122.4194);
-
-
-
   // The fields we'll show.
   String latitudeAsSring = 'N/A';
   String longitudeAsString = 'N/A';
 
+  // Are we recording
+  bool recording = false;
 
+  // How we get our location
   var geolocator = Geolocator();
   var locationOptions =
       LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
@@ -165,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           Text(
                             '$latitudeAsSring',
-                            style: Theme.of(context).textTheme.display1,
+                            style: Theme.of(context).textTheme.headline5,
                           ),
                         ],
                       ),
@@ -177,18 +195,49 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           Text(
                             '$longitudeAsString',
-                            style: Theme.of(context).textTheme.display1,
+                            style: Theme.of(context).textTheme.headline5,
                           ),
                         ],
                       ),
-                    ])
+                      SizedBox(
+                        width: 100,
+                        child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          IconButton(
+                            icon: Icon(
+                              recording ? Icons.fiber_smart_record : Icons.fiber_manual_record),
+                            tooltip: recording ? 'Stop recording' : 'Start recording',
+                            onPressed: () {
+                              setState(() {
+                                recording = !recording;
+                                if (recording) {
+                                  print("Recording!");
+                                  enqueueWorkIntent(WorkIntent(
+                                    identifier: 'getLocation',
+                                    initialDelay: Duration(seconds: 5),
+                                  ));
+                                } else {
+                                  print("Stopped");
+                                  cancelAllWorkByTag('getLocation');
+                                }
+                              });
+                            },
+                          ),
+                          Text(recording ? 'Recording' : 'Stopped')
+                        ],
+                      )
+                      )
+                    ],
+                  ),
             ),
             ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: 400, maxHeight: 400),
                 child: GoogleMap(
                     onMapCreated: onMapCreated,
                     initialCameraPosition: CameraPosition(target: center, zoom: 12.0),
-                )),
+                ),
+              ),
           ],
         ),
       ),
