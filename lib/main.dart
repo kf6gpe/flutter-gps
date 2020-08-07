@@ -174,8 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(16.0),
+            IntrinsicHeight(
               child: Row(
                 // Column is also layout widget. It takes a list of children and
                 // arranges them vertically. By default, it sizes itself to fit its
@@ -216,42 +215,38 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                      width: 100,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          IconButton(
-                            icon: Icon(recording
-                                ? Icons.fiber_smart_record
-                                : Icons.fiber_manual_record),
-                            tooltip: recording
-                                ? 'Stop recording'
-                                : 'Start recording',
-                            onPressed: () {
-                              setState(() {
-                                recording = !recording;
-                                if (recording) {
-                                  print("Recording!");
-                                  enqueueWorkIntent(WorkIntent(
-                                    identifier: 'getLocation',
-                                    initialDelay: Duration(seconds: 5),
-                                  ));
-                                } else {
-                                  print("Stopped");
-                                  cancelAllWorkByTag('getLocation');
-                                }
-                              });
-                            },
-                          ),
-                          Text(recording ? 'Recording' : 'Stopped')
-                        ],
-                      ))
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      IconButton(
+                        icon: Icon(recording
+                            ? Icons.fiber_smart_record
+                            : Icons.fiber_manual_record),
+                        tooltip:
+                            recording ? 'Stop recording' : 'Start recording',
+                        onPressed: () {
+                          setState(() {
+                            recording = !recording;
+                            if (recording) {
+                              print("Recording!");
+                              enqueueWorkIntent(WorkIntent(
+                                identifier: 'getLocation',
+                                initialDelay: Duration(seconds: 5),
+                              ));
+                            } else {
+                              print("Stopped");
+                              cancelAllWorkByTag('getLocation');
+                            }
+                          });
+                        },
+                      ),
+                      Text(recording ? 'Recording' : 'Stopped')
+                    ],
+                  )
                 ],
               ),
             ),
-            ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 400, maxHeight: 400),
+            Expanded(
               child: GoogleMap(
                 onMapCreated: onMapCreated,
                 initialCameraPosition:
