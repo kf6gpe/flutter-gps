@@ -79,12 +79,19 @@ class _MyHomePageState extends State<MyHomePage> {
   Stream<Position> _positionStream;
   StreamSubscription<Position> _positionStreamSubscription;
 
+  final MarkerId markerId = MarkerId('here');
+  Marker marker;
+
   GoogleMapController mapController;
 
   @override
   void initState() {
     _positionStream = geolocator.getPositionStream(locationOptions);
     _positionStreamSubscription = _positionStream.listen((Position position) {
+      marker = Marker(
+        markerId: markerId,
+        position: LatLng(position.latitude, position.longitude),
+      );
       setState(() {
         if (position == null) {
           latitudeAsSring = 'unknown';
@@ -102,7 +109,6 @@ class _MyHomePageState extends State<MyHomePage> {
           if (mapController != null) {
             mapController.animateCamera(CameraUpdate.newCameraPosition(
                 CameraPosition(target: center, zoom: 16.0)));
-            print(center);
           }
         }
       });
@@ -194,6 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onMapCreated: onMapCreated,
                 initialCameraPosition:
                     CameraPosition(target: center, zoom: 12.0),
+                markers: marker == null ? null : Set<Marker>.of([marker]),
               ),
             ),
           ],
