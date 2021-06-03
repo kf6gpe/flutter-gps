@@ -91,6 +91,8 @@ class _MyHomePageState extends State<MyHomePage> {
       marker = Marker(
         markerId: markerId,
         position: LatLng(position.latitude, position.longitude),
+        icon:
+            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta),
       );
       setState(() {
         if (position == null) {
