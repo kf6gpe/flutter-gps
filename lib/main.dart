@@ -9,7 +9,7 @@ import 'package:flt_worker/flt_worker.dart';
 void main() {
   runApp(MyApp());
   initializeWorker(worker);
-} 
+}
 
 Future<void> worker(WorkPayload payload) {
   if (payload.tags.contains('getLocation')) {
@@ -63,8 +63,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  
-  
   // Sensible defaults for the map view --- San Francisco.
   LatLng center = LatLng(37.7749, -122.4194);
   // The fields we'll show.
@@ -81,9 +79,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Stream<Position> _positionStream;
   StreamSubscription<Position> _positionStreamSubscription;
 
-  String markerId = "YouAreHere";
-  Marker here;
-
   GoogleMapController mapController;
 
   @override
@@ -97,24 +92,17 @@ class _MyHomePageState extends State<MyHomePage> {
         } else {
           double latitude = position.latitude;
           double longitude = position.longitude;
-          latitudeAsSring = ((latitude.abs() * 1000.0).floor() / 1000.0).toString() + 
-            (latitude > 0 ? '° N' : '° S');
-          longitudeAsString = ((longitude.abs() * 1000.0).floor() / 1000.0).toString() + 
-            (longitude > 180 ? '° E' : '° W');
+          latitudeAsSring =
+              ((latitude.abs() * 1000.0).floor() / 1000.0).toString() +
+                  (latitude > 0 ? '° N' : '° S');
+          longitudeAsString =
+              ((longitude.abs() * 1000.0).floor() / 1000.0).toString() +
+                  (longitude > 180 ? '° E' : '° W');
           center = LatLng(latitude, longitude);
-          if (mapController != null)
-          {
+          if (mapController != null) {
             mapController.animateCamera(CameraUpdate.newCameraPosition(
-               CameraPosition(target: center, zoom: 12.0))
-            );
-            /*
-            if (here != null) {
-              mapController.removeMarker(here);
-            }
-            mapController.addMarker( MarkerOptions( 
-                position: center )
-            ).then( (m) => here = m );
-            */
+                CameraPosition(target: center, zoom: 16.0)));
+            print(center);
           }
         }
       });
@@ -130,7 +118,6 @@ class _MyHomePageState extends State<MyHomePage> {
       _positionStreamSubscription = null;
     }
   }
-
 
   void onMapCreated(GoogleMapController controller) async {
     mapController = controller;
@@ -158,86 +145,57 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Padding(
               padding: EdgeInsets.all(16.0),
-              child:
-                Row(
-                    // Column is also layout widget. It takes a list of children and
-                    // arranges them vertically. By default, it sizes itself to fit its
-                    // children horizontally, and tries to be as tall as its parent.
-                    //
-                    // Invoke "debug paint" (press "p" in the console where you ran
-                    // "flutter run", or select "Toggle Debug Paint" from the Flutter tool
-                    // window in IntelliJ) to see the wireframe for each widget.
-                    //
-                    // Column has various properties to control how it sizes itself and
-                    // how it positions its children. Here we use mainAxisAlignment to
-                    // center the children vertically; the main axis here is the vertical
-                    // axis because Columns are vertical (the cross axis would be
-                    // horizontal).
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              child: Row(
+                // Column is also layout widget. It takes a list of children and
+                // arranges them vertically. By default, it sizes itself to fit its
+                // children horizontally, and tries to be as tall as its parent.
+                //
+                // Invoke "debug paint" (press "p" in the console where you ran
+                // "flutter run", or select "Toggle Debug Paint" from the Flutter tool
+                // window in IntelliJ) to see the wireframe for each widget.
+                //
+                // Column has various properties to control how it sizes itself and
+                // how it positions its children. Here we use mainAxisAlignment to
+                // center the children vertically; the main axis here is the vertical
+                // axis because Columns are vertical (the cross axis would be
+                // horizontal).
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            'Latitude',
-                          ),
-                          Text(
-                            '$latitudeAsSring',
-                            style: Theme.of(context).textTheme.headline5,
-                          ),
-                        ],
+                      Text(
+                        'Latitude',
                       ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            'Longitude',
-                          ),
-                          Text(
-                            '$longitudeAsString',
-                            style: Theme.of(context).textTheme.headline5,
-                          ),
-                        ],
+                      Text(
+                        '$latitudeAsSring',
+                        style: Theme.of(context).textTheme.headline5,
                       ),
-                      SizedBox(
-                        width: 100,
-                        child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          IconButton(
-                            icon: Icon(
-                              recording ? Icons.fiber_smart_record : Icons.fiber_manual_record),
-                            tooltip: recording ? 'Stop recording' : 'Start recording',
-                            onPressed: () {
-                              setState(() {
-                                recording = !recording;
-                                if (recording) {
-                                  print("Recording!");
-                                  enqueueWorkIntent(WorkIntent(
-                                    identifier: 'getLocation',
-                                    initialDelay: Duration(seconds: 5),
-                                  ));
-                                } else {
-                                  print("Stopped");
-                                  cancelAllWorkByTag('getLocation');
-                                }
-                              });
-                            },
-                          ),
-                          Text(recording ? 'Recording' : 'Stopped')
-                        ],
-                      )
-                      )
                     ],
                   ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'Longitude',
+                      ),
+                      Text(
+                        '$longitudeAsString',
+                        style: Theme.of(context).textTheme.headline5,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
             ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: 400, maxHeight: 400),
-                child: GoogleMap(
-                    onMapCreated: onMapCreated,
-                    initialCameraPosition: CameraPosition(target: center, zoom: 12.0),
-                ),
+              constraints: BoxConstraints(maxWidth: 400, maxHeight: 400),
+              child: GoogleMap(
+                onMapCreated: onMapCreated,
+                initialCameraPosition:
+                    CameraPosition(target: center, zoom: 12.0),
               ),
+            ),
           ],
         ),
       ),
