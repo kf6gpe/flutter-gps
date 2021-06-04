@@ -1,50 +1,13 @@
 import 'dart:async';
-import 'package:flt_worker/android.dart';
-import 'package:flt_worker/ios.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flt_worker/flt_worker.dart';
 
 final locationOptions =
     LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
 
 void main() {
-  initializeWorker(worker);
-<<<<<<< HEAD
-=======
   runApp(MyApp());
->>>>>>> cba3a69999f5a2a88f1d4ea7da890aef91f4ef52
-}
-
-Future<void> worker(WorkPayload payload) {
-  if (payload.tags.contains('getLocation')) {
-    print('get the position here');
-    BackgroundPositionMonitor monitor = BackgroundPositionMonitor();
-    monitor.monitorPosition();
-    enqueueWorkIntent(WorkIntent(
-      identifier: 'getLocation',
-      initialDelay: Duration(seconds: 5),
-    ));
-  }
-  return Future.value();
-}
-
-class BackgroundPositionMonitor {
-  var _geolocator;
-
-  BackgroundPositionMonitor() {
-    // TODO make this a factory
-    print("BackgroundWorker()");
-    _geolocator = Geolocator();
-    print(_geolocator);
-  }
-
-  Future<Position> monitorPosition() {
-    var _positionStream = _geolocator.getPositionStream(locationOptions);
-    var position = _positionStream.first();
-    print('${position.latitude} ${position.longitude}');
-  }
 }
 
 class MyApp extends StatelessWidget {
