@@ -10,13 +10,12 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: ">=2.2.0-dev.68.0 <3.0.0"
 
 dependencies:
   geolocator: ^5.1.5
   google_api_availability: ^2.0.0
   permission_handler: ^4.0.0
-  flt_worker: ^0.1.0
   flutter:
     sdk: flutter
 
